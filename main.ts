@@ -11,8 +11,10 @@ namespace StatusBarKind {
     export const SkeletonHP = StatusBarKind.create()
     export const BatHP = StatusBarKind.create()
 }
-controller.combos.attachCombo("BB", function () {
-    game.showLongText("Level: " + PlayerLevel, DialogLayout.Bottom)
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (0 == 0) {
+        PlayerMenu.close()
+    }
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     animation.runImageAnimation(
@@ -152,17 +154,15 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     pause(100)
     sprites.destroy(AttackHitBox)
 })
-statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
-    sprites.destroy(Enemies)
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
+    PlayerMenu = miniMenu.createMenuFromArray([miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")])
+    PlayerMenu.setTitle("Menu")
+    PlayerMenu.setDimensions(100, 100)
+    tiles.placeOnTile(PlayerMenu, PlayerSprite.tilemapLocation())
 })
-function MonsterHunterQuest (PlayerLevel: number) {
-	
-}
-sprites.onOverlap(SpriteKind.HitBox, SpriteKind.Enemy, function (sprite, otherSprite) {
-	
-})
-function EnemiesHealthBars () {
-    SkeletonHPList[1].attachToSprite(Enemies)
+function Inventory2 () {
+    inventory = Inventory.create_inventory([], 0)
+    tiles.placeOnTile(inventory, PlayerSprite.tilemapLocation())
 }
 // Source Code provided By teacher
 function Monster_Spawns (PlayerLevel: number) {
@@ -238,14 +238,14 @@ function Monster_Spawns (PlayerLevel: number) {
         tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
     }
 }
+let Enemies: Sprite = null
 let SpawnLocation: tiles.Location[] = []
 let EnemySprites: Sprite[] = []
-let Enemies: Sprite = null
+let inventory: Inventory.Inventory = null
 let AttackHitBox: Sprite = null
-let SkeletonHPList: StatusBarSprite[] = []
+let PlayerMenu: miniMenu.MenuSprite = null
 let PlayerSprite: Sprite = null
-let PlayerLevel = 0
-PlayerLevel = 1
+let PlayerLevel = 1
 let EnemyDmg = [1, 2]
 let NPC1 = sprites.create(img`
     . . . . f f f f . . . . 
@@ -292,8 +292,6 @@ PlayerHP.positionDirection(CollisionDirection.Top)
 PlayerHP.setOffsetPadding(-30, 0)
 PlayerMagic.positionDirection(CollisionDirection.Top)
 PlayerMagic.setOffsetPadding(-30, 8)
-SkeletonHPList = [statusbars.create(20, 4, StatusBarKind.SkeletonHP), statusbars.create(0, 0, StatusBarKind.SkeletonHP), statusbars.create(0, 0, StatusBarKind.SkeletonHP)]
-let BatHPList = [statusbars.create(20, 4, StatusBarKind.BatHP), statusbars.create(0, 0, StatusBarKind.Health), statusbars.create(0, 0, StatusBarKind.Health)]
 game.onUpdateInterval(10000, function () {
     sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
     Monster_Spawns(PlayerLevel)
