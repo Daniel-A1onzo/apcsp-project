@@ -11,11 +11,6 @@ namespace StatusBarKind {
     export const SkeletonHP = StatusBarKind.create()
     export const BatHP = StatusBarKind.create()
 }
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (0 == 0) {
-        PlayerMenu.close()
-    }
-})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     animation.runImageAnimation(
     PlayerSprite,
@@ -154,11 +149,20 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     pause(100)
     sprites.destroy(AttackHitBox)
 })
+function InventoryFun () {
+    OpenedInventory = !(OpenedInventory)
+}
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    PlayerMenu = miniMenu.createMenuFromArray([miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")])
+    MenuItems = [miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")]
+    PlayerMenu = miniMenu.createMenuFromArray(MenuItems)
     PlayerMenu.setTitle("Menu")
     PlayerMenu.setDimensions(100, 100)
     tiles.placeOnTile(PlayerMenu, PlayerSprite.tilemapLocation())
+    PlayerMenu.onButtonPressed(controller.A, function (selection, selectedIndex) {
+        if (selection == "Inventory") {
+            Inventory2()
+        }
+    })
 })
 function Inventory2 () {
     inventory = Inventory.create_inventory([], 0)
@@ -242,8 +246,10 @@ let Enemies: Sprite = null
 let SpawnLocation: tiles.Location[] = []
 let EnemySprites: Sprite[] = []
 let inventory: Inventory.Inventory = null
-let AttackHitBox: Sprite = null
 let PlayerMenu: miniMenu.MenuSprite = null
+let MenuItems: miniMenu.MenuItem[] = []
+let OpenedInventory = false
+let AttackHitBox: Sprite = null
 let PlayerSprite: Sprite = null
 let PlayerLevel = 1
 let EnemyDmg = [1, 2]
@@ -285,7 +291,7 @@ PlayerSprite = sprites.create(img`
     `, SpriteKind.Player)
 controller.moveSprite(PlayerSprite)
 scene.cameraFollowSprite(PlayerSprite)
-tiles.setCurrentTilemap(tilemap`Monster Spawn test`)
+tiles.setCurrentTilemap(tilemap`level1`)
 let PlayerHP = statusbars.create(100, 8, StatusBarKind.Health)
 let PlayerMagic = statusbars.create(100, 4, StatusBarKind.Magic)
 PlayerHP.positionDirection(CollisionDirection.Top)
@@ -293,6 +299,5 @@ PlayerHP.setOffsetPadding(-30, 0)
 PlayerMagic.positionDirection(CollisionDirection.Top)
 PlayerMagic.setOffsetPadding(-30, 8)
 game.onUpdateInterval(10000, function () {
-    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
-    Monster_Spawns(PlayerLevel)
+	
 })
