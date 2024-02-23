@@ -149,8 +149,55 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     pause(100)
     sprites.destroy(AttackHitBox)
 })
-function InventoryFun () {
-    OpenedInventory = !(OpenedInventory)
+function Start () {
+    PlayerLevel = 1
+    EnemyDmg = [1, 2]
+    NPC1 = sprites.create(img`
+        . . . . f f f f . . . . 
+        . . f f e e e e f f . . 
+        . f f e e e e e e f f . 
+        f f f f 4 e e e f f f f 
+        f f f 4 4 4 e e f f f f 
+        f f f 4 4 4 4 e e f f f 
+        f 4 e 4 4 4 4 4 4 e 4 f 
+        f 4 4 f f 4 4 f f 4 4 f 
+        f e 4 d d d d d d 4 e f 
+        . f e d d b b d d e f . 
+        . f f e 4 4 4 4 e f f . 
+        e 4 f b 1 1 1 1 b f 4 e 
+        4 d f 1 1 1 1 1 1 f d 4 
+        4 4 f 6 6 6 6 6 6 f 4 4 
+        . . . f f f f f f . . . 
+        . . . f f . . f f . . . 
+        `, SpriteKind.QuestNPC)
+    PlayerSprite = sprites.create(img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f f e 2 2 2 2 2 2 e e f . . 
+        . . f e 2 f f f f f f 2 e f . . 
+        . . f f f f e e e e f f f f . . 
+        . f f e f b f 4 4 f b f e f f . 
+        . f e e 4 1 f d d f 1 4 e e f . 
+        . . f e e d d d d d d e e f . . 
+        . . . f e e 4 4 4 4 e e f . . . 
+        . . e 4 f 2 2 2 2 2 2 f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `, SpriteKind.Player)
+    controller.moveSprite(PlayerSprite)
+    scene.cameraFollowSprite(PlayerSprite)
+    tiles.setCurrentTilemap(tilemap`level6`)
+    PlayerMagic = statusbars.create(20, 4, StatusBarKind.Magic)
+    PlayerHP = statusbars.create(40, 8, StatusBarKind.Health)
+    PlayerMagic.positionDirection(CollisionDirection.Top)
+    PlayerMagic.setOffsetPadding(70, 8)
+    PlayerHP.positionDirection(CollisionDirection.Top)
+    PlayerHP.setOffsetPadding(60, 0)
+    PlayerHP.setColor(2, 15)
 }
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     MenuItems = [miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")]
@@ -161,12 +208,47 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     PlayerMenu.onButtonPressed(controller.A, function (selection, selectedIndex) {
         if (selection == "Inventory") {
             Inventory2()
+            PlayerMenu.setButtonEventsEnabled(false)
         }
+    })
+    PlayerMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Margin, miniMenu.createBorderBox(
+    0,
+    0,
+    0,
+    0
+    ))
+    PlayerMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Border, miniMenu.createBorderBox(
+    0,
+    0,
+    0,
+    0
+    ))
+    PlayerMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.Background, 4)
+    PlayerMenu.setStyleProperty(miniMenu.StyleKind.Default, miniMenu.StyleProperty.Foreground, 11)
+    PlayerMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Alignment, 1)
+    PlayerMenu.top = 80
+    PlayerMenu.right = 160
+    PlayerMenu.z = 0
+    PlayerMenu.setFlag(SpriteFlag.RelativeToCamera, true)
+    controller.moveSprite(PlayerSprite, 0, 0)
+    PlayerMenu.setButtonEventsEnabled(true)
+    PlayerMenu.onButtonPressed(controller.B, function (selection, selectedIndex) {
+        if (selection == "Inventory") {
+            inventory.setFlag(SpriteFlag.Invisible, true)
+        } else {
+            PlayerMenu.close()
+        }
+        controller.moveSprite(PlayerSprite)
     })
 })
 function Inventory2 () {
-    inventory = Inventory.create_inventory([], 0)
+    inventory = Inventory.create_inventory([], 1000)
     tiles.placeOnTile(inventory, PlayerSprite.tilemapLocation())
+    inventory.setFlag(SpriteFlag.RelativeToCamera, true)
+    inventory.top = 0
+    inventory.right = 150
+    PlayerHP.setFlag(SpriteFlag.Invisible, true)
+    PlayerMagic.setFlag(SpriteFlag.Invisible, true)
 }
 // Source Code provided By teacher
 function Monster_Spawns (PlayerLevel: number) {
@@ -248,56 +330,15 @@ let EnemySprites: Sprite[] = []
 let inventory: Inventory.Inventory = null
 let PlayerMenu: miniMenu.MenuSprite = null
 let MenuItems: miniMenu.MenuItem[] = []
-let OpenedInventory = false
+let PlayerHP: StatusBarSprite = null
+let PlayerMagic: StatusBarSprite = null
+let NPC1: Sprite = null
+let EnemyDmg: number[] = []
+let PlayerLevel = 0
 let AttackHitBox: Sprite = null
 let PlayerSprite: Sprite = null
-let PlayerLevel = 1
-let EnemyDmg = [1, 2]
-let NPC1 = sprites.create(img`
-    . . . . f f f f . . . . 
-    . . f f e e e e f f . . 
-    . f f e e e e e e f f . 
-    f f f f 4 e e e f f f f 
-    f f f 4 4 4 e e f f f f 
-    f f f 4 4 4 4 e e f f f 
-    f 4 e 4 4 4 4 4 4 e 4 f 
-    f 4 4 f f 4 4 f f 4 4 f 
-    f e 4 d d d d d d 4 e f 
-    . f e d d b b d d e f . 
-    . f f e 4 4 4 4 e f f . 
-    e 4 f b 1 1 1 1 b f 4 e 
-    4 d f 1 1 1 1 1 1 f d 4 
-    4 4 f 6 6 6 6 6 6 f 4 4 
-    . . . f f f f f f . . . 
-    . . . f f . . f f . . . 
-    `, SpriteKind.QuestNPC)
-PlayerSprite = sprites.create(img`
-    . . . . . . f f f f . . . . . . 
-    . . . . f f f 2 2 f f f . . . . 
-    . . . f f f 2 2 2 2 f f f . . . 
-    . . f f f e e e e e e f f f . . 
-    . . f f e 2 2 2 2 2 2 e e f . . 
-    . . f e 2 f f f f f f 2 e f . . 
-    . . f f f f e e e e f f f f . . 
-    . f f e f b f 4 4 f b f e f f . 
-    . f e e 4 1 f d d f 1 4 e e f . 
-    . . f e e d d d d d d e e f . . 
-    . . . f e e 4 4 4 4 e e f . . . 
-    . . e 4 f 2 2 2 2 2 2 f 4 e . . 
-    . . 4 d f 2 2 2 2 2 2 f d 4 . . 
-    . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
-    . . . . . f f f f f f . . . . . 
-    . . . . . f f . . f f . . . . . 
-    `, SpriteKind.Player)
-controller.moveSprite(PlayerSprite)
-scene.cameraFollowSprite(PlayerSprite)
-tiles.setCurrentTilemap(tilemap`level1`)
-let PlayerHP = statusbars.create(100, 8, StatusBarKind.Health)
-let PlayerMagic = statusbars.create(100, 4, StatusBarKind.Magic)
-PlayerHP.positionDirection(CollisionDirection.Top)
-PlayerHP.setOffsetPadding(-30, 0)
-PlayerMagic.positionDirection(CollisionDirection.Top)
-PlayerMagic.setOffsetPadding(-30, 8)
+Start()
 game.onUpdateInterval(10000, function () {
-	
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
+    Monster_Spawns(PlayerLevel)
 })
