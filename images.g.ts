@@ -49,25 +49,6 @@ e 4 f b 1 1 1 1 b f 4 e
 . . . f f f f f f . . . 
 . . . f f . . f f . . . 
 `;
-            case "vx5C[_VEw2K-zHgQY6[f":
-            case "PlayerPlaceholder":return img`
-. . . . . . f f f f . . . . . . 
-. . . . f f f 2 2 f f f . . . . 
-. . . f f f 2 2 2 2 f f f . . . 
-. . f f f e e e e e e f f f . . 
-. . f f e 2 2 2 2 2 2 e e f . . 
-. . f e 2 f f f f f f 2 e f . . 
-. . f f f f e e e e f f f f . . 
-. f f e f b f 4 4 f b f e f f . 
-. f e e 4 1 f d d f 1 4 e e f . 
-. . f e e d d d d d d e e f . . 
-. . . f e e 4 4 4 4 e e f . . . 
-. . e 4 f 2 2 2 2 2 2 f 4 e . . 
-. . 4 d f 2 2 2 2 2 2 f d 4 . . 
-. . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
-. . . . . f f f f f f . . . . . 
-. . . . . f f . . f f . . . . . 
-`;
             case "image1":
             case "StarterSword":return img`
 . . . . . . . . . . . . . . . 
@@ -122,6 +103,72 @@ e e f 6 6 6 6 6 6 f e e .
 . . . f f 3 3 3 3 3 3 f f . . . 
 . . . f 3 3 5 3 3 5 3 3 f . . . 
 . . . f f f f f f f f f f . . . 
+. . . . . f f . . f f . . . . . 
+`;
+            case "image4":
+            case "Portal":return img`
+.........................
+........9998ccccc........
+......9999988cccccc......
+.....999999988cccccc.....
+....99999999988cccccc....
+...999999999998ccccccc...
+..99999999999998ccccccc..
+..9999999ddddd988cccccc1.
+.999999ddd11111188cccccc.
+.9999ddd1888888119cccccc.
+.999dd1188ccccc889cccccc.
+.999d1188cc999cc81cccccc.
+.999d118cc99919c81ccccc8.
+.999d118cc991c8c81cccc88.
+.999d118cc998ccc89cccc88.
+.999dd118cc9988819ccc888.
+.9999dd1888c9999cccc881d.
+..999dd11188cccccc8881d..
+..9999dd1118888888811dd..
+...999dd111111111111dd...
+....999dd1111111111dd....
+.....999ddd11111dddd.....
+......999dddddddddd......
+........99ddddddd........
+.........................
+`;
+            case "image5":
+            case "myImage":return img`
+. . . . . . f f f f . . . . . . 
+. . . . f f f 2 2 f f f . . . . 
+. . . f f f 2 2 2 2 f f f . . . 
+. . f f f e e e e e e f f f . . 
+. . f f e 2 2 2 2 2 2 e e f . . 
+. . f e 2 f f f f f f 2 e f . . 
+. . f f f f e e e e f f f f . . 
+. f f e f b f 4 4 f b f e f f . 
+. f e e 4 1 f d d f 1 4 e e f . 
+. . f e e d d d d d d e e f . . 
+. . . f e e 4 4 4 4 e e f . . . 
+. . e 4 f 2 2 2 2 2 2 f 4 e . . 
+. . 4 d f 2 2 2 2 2 2 f d 4 . . 
+. . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+. . . . . f f f f f f . . . . . 
+. . . . . f f . . f f . . . . . 
+`;
+            case "vx5C[_VEw2K-zHgQY6[f":
+            case "PlayerPlaceholder":return img`
+. . . . . . f f f f . . . . . . 
+. . . . f f f 2 2 f f f . . . . 
+. . . f f f 2 2 2 2 f f f . . . 
+. . f f f e e e e e e f f f . . 
+. . f f e 2 2 2 2 2 2 e e f . . 
+. . f e 2 f f f f f f 2 e f . . 
+. . f f f f e e e e f f f f . . 
+. f f e f b f 4 4 f b f e f f . 
+. f e e 4 1 f d d f 1 4 e e f . 
+. . f e e d d d d d d e e f . . 
+. . . f e e 4 4 4 4 e e f . . . 
+. . e 4 f 2 2 2 2 2 2 f 4 e . . 
+. . 4 d f 2 2 2 2 2 2 f d 4 . . 
+. . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+. . . . . f f f f f f . . . . . 
 . . . . . f f . . f f . . . . . 
 `;
         }
