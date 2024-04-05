@@ -13,6 +13,9 @@ namespace StatusBarKind {
     export const SkeletonHP = StatusBarKind.create()
     export const BatHP = StatusBarKind.create()
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+})
 function PlayerMenu () {
     MenuItems = [miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")]
     PlayerMenu2 = miniMenu.createMenuFromArray(MenuItems)
@@ -42,33 +45,23 @@ function PlayerMenu () {
     PlayerMenu2.setFlag(SpriteFlag.RelativeToCamera, true)
     controller.moveSprite(PlayerSprite, 0, 0)
 }
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (OpenedInventory == true) {
-        inventory.setFlag(SpriteFlag.Invisible, true)
-        PlayerMenu2.setButtonEventsEnabled(true)
-    }
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.QuestNPC, function (sprite, otherSprite) {
-    if (controller.A.isPressed() == true) {
-        Quests(otherSprite)
-    }
-})
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (true) {
-    	
-    } else {
-        animation.runImageAnimation(
-        PlayerSprite,
-        assets.animation`Attack`,
-        100,
-        false
-        )
-        AttackHitBox = sprites.create(assets.image`ProtoHitbox`, SpriteKind.HitBox)
-        tiles.placeOnTile(AttackHitBox, PlayerSprite.tilemapLocation())
-        AttackHitBox.follow(PlayerSprite)
-        pause(100)
-        sprites.destroy(AttackHitBox)
-    }
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
+    PlayerMenu()
+    PlayerMenu2.onButtonPressed(controller.A, function (selection, selectedIndex) {
+        if (selection == "Inventory") {
+            CreateInventory()
+            PlayerMenu2.setButtonEventsEnabled(false)
+        }
+        if (selection == "Stats") {
+            game.showLongText("Level: " + PlayerLevel, DialogLayout.Left)
+        }
+    })
+    PlayerMenu2.onButtonPressed(controller.B, function (selection, selectedIndex) {
+        if (OpenedMenu == true) {
+            PlayerMenu2.close()
+        }
+        controller.moveSprite(PlayerSprite)
+    })
 })
 function Start () {
     Exp = 0
@@ -92,6 +85,34 @@ function Start () {
     PlayerHP.setOffsetPadding(60, 0)
     PlayerHP.setColor(12, 0)
 }
+function Boss_Fight (DMGImn: number, Attack: any[]) {
+    BossProjectile = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 3 3 3 . . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . . 3 3 3 . . . . . . . 
+        . . . . . . . 3 . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Projectile)
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.QuestNPC, function (sprite, otherSprite) {
+    if (controller.A.isPressed() == true) {
+        Quests(otherSprite)
+    }
+})
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    DefeatedEnemies += 1
+})
 function Quests (NPC: Sprite) {
     ReqEnem = 5 * PlayerLevel / (PlayerLevel / 2)
     HuntQuest = "Defeat " + ReqEnem + " enemies"
@@ -105,24 +126,6 @@ function Quests (NPC: Sprite) {
         textSprite.setOutline(1, 15)
     }
 }
-controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    PlayerMenu()
-    PlayerMenu2.onButtonPressed(controller.A, function (selection, selectedIndex) {
-        if (selection == "Inventory") {
-            CreateInventory()
-            PlayerMenu2.setButtonEventsEnabled(false)
-        }
-        if (selection == "Stats") {
-            game.showLongText("Level: " + PlayerLevel, DialogLayout.Left)
-        }
-    })
-    PlayerMenu2.onButtonPressed(controller.B, function (selection, selectedIndex) {
-        if (OpenedMenu == true) {
-            PlayerMenu2.close()
-        }
-        controller.moveSprite(PlayerSprite)
-    })
-})
 // Code provided by ___ on the make code arcade forum.
 function CreateInventory () {
     ItemList = [Inventory.create_item("Starter's Blade", assets.image`StarterSword`, "Test descripiton")]
@@ -133,8 +136,28 @@ function CreateInventory () {
     tiles.placeOnTile(inventory, PlayerSprite.tilemapLocation())
     inventory.setFlag(SpriteFlag.RelativeToCamera, true)
 }
-sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
-    DefeatedEnemies += 1
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (true) {
+    	
+    } else {
+        animation.runImageAnimation(
+        PlayerSprite,
+        assets.animation`Attack`,
+        100,
+        false
+        )
+        AttackHitBox = sprites.create(assets.image`ProtoHitbox`, SpriteKind.HitBox)
+        tiles.placeOnTile(AttackHitBox, PlayerSprite.tilemapLocation())
+        AttackHitBox.follow(PlayerSprite)
+        pause(100)
+        sprites.destroy(AttackHitBox)
+    }
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (OpenedInventory == true) {
+        inventory.setFlag(SpriteFlag.Invisible, true)
+        PlayerMenu2.setButtonEventsEnabled(true)
+    }
 })
 // Source Code provided By teacher
 function Monster_Spawns (PlayerLevel: number) {
@@ -210,41 +233,40 @@ function Monster_Spawns (PlayerLevel: number) {
         tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
     }
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    sprites.destroy(otherSprite)
-})
 let Enemies: Sprite = null
 let EnemySprites: Sprite[] = []
 let SpawnLocation: tiles.Location[] = []
+let AttackHitBox: Sprite = null
+let OpenedInventory = false
+let inventory: Inventory.Inventory = null
 let ItemList: Inventory.Item[] = []
 let textSprite: TextSprite = null
-let DefeatedEnemies = 0
 let HuntQuest = ""
 let ReqEnem = 0
+let DefeatedEnemies = 0
+let BossProjectile: Sprite = null
 let PlayerHP: StatusBarSprite = null
 let PlayerMagic: StatusBarSprite = null
 let EnemyDmg: number[] = []
-let PlayerLevel = 0
-let Portal2: Sprite = null
 let QNPC3: Sprite = null
 let QNPC2: Sprite = null
 let QNPC1: Sprite = null
 let ReqExp = 0
 let Exp = 0
-let AttackHitBox: Sprite = null
-let inventory: Inventory.Inventory = null
-let OpenedInventory = false
+let PlayerLevel = 0
 let PlayerSprite: Sprite = null
 let OpenedMenu = false
 let PlayerMenu2: miniMenu.MenuSprite = null
 let MenuItems: miniMenu.MenuItem[] = []
+let Portal2: Sprite = null
 Start()
-game.onUpdateInterval(5000, function () {
-    Monster_Spawns(PlayerLevel)
-})
+scaling.scaleToPercent(Portal2, 300, ScaleDirection.Uniformly, ScaleAnchor.Middle)
 game.onUpdateInterval(500, function () {
     if (ReqExp == Exp) {
         Exp = 0
         ReqExp = ReqExp * 2
     }
+})
+game.onUpdateInterval(5000, function () {
+    Monster_Spawns(PlayerLevel)
 })

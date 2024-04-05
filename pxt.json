@@ -15,7 +15,8 @@
         "Color Fading": "github:jwunderl/pxt-color#v0.2.3",
         "sound effects": "github:klausw3/pxt-sound-effects#v1.2.0",
         "Custom Keybind Extension": "github:Brohann3214/custom-keybind-extension#ce1cb5acda5cd438592e38da4aaab10b73b46c64",
-        "sprite-scaling": "*"
+        "sprite-scaling": "*",
+        "pxt-lantern": "github:riknoll/pxt-lantern#v0.1.2"
     },
     "files": [
         "main.blocks",
@@ -31,7 +32,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "1.12.47",
+        "target": "1.12.49",
         "targetId": "arcade"
     },
     "supportedTargets": [
