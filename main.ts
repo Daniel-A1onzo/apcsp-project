@@ -6,6 +6,7 @@ namespace SpriteKind {
     export const Weapon = SpriteKind.create()
     export const Item = SpriteKind.create()
     export const Portal = SpriteKind.create()
+    export const Boss = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const SkelHP = StatusBarKind.create()
@@ -17,7 +18,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     sprites.destroy(otherSprite)
 })
 function PlayerMenu () {
-    MenuItems = [miniMenu.createMenuItem("Stats"), miniMenu.createMenuItem("Inventory")]
+    MenuItems = [miniMenu.createMenuItem("Stats")]
     PlayerMenu2 = miniMenu.createMenuFromArray(MenuItems)
     OpenedMenu = true
     PlayerMenu2.setFlag(SpriteFlag.Invisible, !(OpenedMenu))
@@ -48,10 +49,6 @@ function PlayerMenu () {
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     PlayerMenu()
     PlayerMenu2.onButtonPressed(controller.A, function (selection, selectedIndex) {
-        if (selection == "Inventory") {
-            CreateInventory()
-            PlayerMenu2.setButtonEventsEnabled(false)
-        }
         if (selection == "Stats") {
             game.showLongText("Level: " + PlayerLevel, DialogLayout.Left)
         }
@@ -64,13 +61,37 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     })
 })
 function Start () {
+    Boss = sprites.create(img`
+        ........................
+        ........................
+        ........................
+        ........................
+        ..........ffff..........
+        ........ff1111ff........
+        .......fb111111bf.......
+        .......f11111111f.......
+        ......fd11111111df......
+        ......fd11111111df......
+        ......fddd1111dddf......
+        ......fbdbfddfbdbf......
+        ......fcdcf11fcdcf......
+        .......fb111111bf.......
+        ......fffcdb1bdffff.....
+        ....fc111cbfbfc111cf....
+        ....f1b1b1ffff1b1b1f....
+        ....fbfbffffffbfbfbf....
+        .........ffffff.........
+        ...........fff..........
+        ........................
+        ........................
+        ........................
+        ........................
+        `, SpriteKind.Boss)
     Exp = 0
     ReqExp = 10
     QNPC1 = sprites.create(assets.image`NPC1`, SpriteKind.QuestNPC)
     QNPC2 = sprites.create(assets.image`NPC3`, SpriteKind.QuestNPC)
     QNPC3 = sprites.create(assets.image`NPC2`, SpriteKind.QuestNPC)
-    Portal2 = sprites.create(assets.image`Portal`, SpriteKind.Portal)
-    tiles.placeOnTile(Portal2, tiles.getTileLocation(101, 101))
     PlayerLevel = 1
     EnemyDmg = [1, 2]
     PlayerSprite = sprites.create(assets.image`myImage`, SpriteKind.Player)
@@ -126,16 +147,6 @@ function Quests (NPC: Sprite) {
         textSprite.setOutline(1, 15)
     }
 }
-// Code provided by ___ on the make code arcade forum.
-function CreateInventory () {
-    ItemList = [Inventory.create_item("Starter's Blade", assets.image`StarterSword`, "Test descripiton")]
-    inventory = Inventory.create_inventory(ItemList, 100)
-    inventory.set_number(InventoryNumberAttribute.SelectedIndex, -1)
-    OpenedInventory = true
-    inventory.setFlag(SpriteFlag.Invisible, !(OpenedInventory))
-    tiles.placeOnTile(inventory, PlayerSprite.tilemapLocation())
-    inventory.setFlag(SpriteFlag.RelativeToCamera, true)
-}
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (true) {
     	
@@ -151,12 +162,6 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         AttackHitBox.follow(PlayerSprite)
         pause(100)
         sprites.destroy(AttackHitBox)
-    }
-})
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (OpenedInventory == true) {
-        inventory.setFlag(SpriteFlag.Invisible, true)
-        PlayerMenu2.setButtonEventsEnabled(true)
     }
 })
 // Source Code provided By teacher
@@ -237,9 +242,6 @@ let Enemies: Sprite = null
 let EnemySprites: Sprite[] = []
 let SpawnLocation: tiles.Location[] = []
 let AttackHitBox: Sprite = null
-let OpenedInventory = false
-let inventory: Inventory.Inventory = null
-let ItemList: Inventory.Item[] = []
 let textSprite: TextSprite = null
 let HuntQuest = ""
 let ReqEnem = 0
@@ -253,14 +255,13 @@ let QNPC2: Sprite = null
 let QNPC1: Sprite = null
 let ReqExp = 0
 let Exp = 0
+let Boss: Sprite = null
 let PlayerLevel = 0
 let PlayerSprite: Sprite = null
 let OpenedMenu = false
 let PlayerMenu2: miniMenu.MenuSprite = null
 let MenuItems: miniMenu.MenuItem[] = []
-let Portal2: Sprite = null
 Start()
-scaling.scaleToPercent(Portal2, 300, ScaleDirection.Uniformly, ScaleAnchor.Middle)
 game.onUpdateInterval(500, function () {
     if (ReqExp == Exp) {
         Exp = 0
