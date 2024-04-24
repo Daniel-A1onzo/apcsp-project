@@ -16,6 +16,7 @@ namespace StatusBarKind {
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     sprites.destroy(otherSprite)
+    PlayerHP.value += -1
 })
 function PlayerMenu () {
     MenuItems = [miniMenu.createMenuItem("Stats")]
@@ -46,111 +47,163 @@ function PlayerMenu () {
     PlayerMenu2.setFlag(SpriteFlag.RelativeToCamera, true)
     controller.moveSprite(PlayerSprite, 0, 0)
 }
-controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    PlayerMenu()
-    PlayerMenu2.onButtonPressed(controller.A, function (selection, selectedIndex) {
-        if (selection == "Stats") {
-            game.showLongText("Level: " + PlayerLevel, DialogLayout.Left)
-        }
-    })
-    PlayerMenu2.onButtonPressed(controller.B, function (selection, selectedIndex) {
-        if (OpenedMenu == true) {
-            PlayerMenu2.close()
-        }
-        controller.moveSprite(PlayerSprite)
-    })
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    PlayerSprite,
+    [img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f f e 2 2 2 2 2 2 e e f . . 
+        . . f e 2 f f f f f f 2 e f . . 
+        . . f f f f e e e e f f f f . . 
+        . f f e f b f 4 4 f b f e f f . 
+        . f e e 4 1 f d d f 1 4 e e f . 
+        . . f e e d d d d d d e e f . . 
+        . . . f e e 4 4 4 4 e e f . . . 
+        . . e 4 f 2 2 2 2 2 2 f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f f e 2 2 2 2 2 2 e e f . . 
+        . f f e 2 f f f f f f 2 e f f . 
+        . f f f f f e e e e f f f f f . 
+        . . f e f b f 4 4 f b f e f . . 
+        . . f e 4 1 f d d f 1 4 e f . . 
+        . . . f e 4 d d d d 4 e f e . . 
+        . . f e f 2 2 2 2 e d d 4 e . . 
+        . . e 4 f 2 2 2 2 e d d e . . . 
+        . . . . f 4 4 5 5 f e e . . . . 
+        . . . . f f f f f f f . . . . . 
+        . . . . f f f . . . . . . . . . 
+        `,img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f f e 2 2 2 2 2 2 e e f . . 
+        . . f e 2 f f f f f f 2 e f . . 
+        . . f f f f e e e e f f f f . . 
+        . f f e f b f 4 4 f b f e f f . 
+        . f e e 4 1 f d d f 1 4 e e f . 
+        . . f e e d d d d d d e e f . . 
+        . . . f e e 4 4 4 4 e e f . . . 
+        . . e 4 f 2 2 2 2 2 2 f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f e e 2 2 2 2 2 2 e f f . . 
+        . f f e 2 f f f f f f 2 e f f . 
+        . f f f f f e e e e f f f f f . 
+        . . f e f b f 4 4 f b f e f . . 
+        . . f e 4 1 f d d f 1 4 e f . . 
+        . . e f e 4 d d d d 4 e f . . . 
+        . . e 4 d d e 2 2 2 2 f e f . . 
+        . . . e d d e 2 2 2 2 f 4 e . . 
+        . . . . e e f 5 5 4 4 f . . . . 
+        . . . . . f f f f f f f . . . . 
+        . . . . . . . . . f f f . . . . 
+        `],
+    500,
+    false
+    )
 })
-function Start () {
-    Boss = sprites.create(img`
-        ........................
-        ........................
-        ........................
-        ........................
-        ..........ffff..........
-        ........ff1111ff........
-        .......fb111111bf.......
-        .......f11111111f.......
-        ......fd11111111df......
-        ......fd11111111df......
-        ......fddd1111dddf......
-        ......fbdbfddfbdbf......
-        ......fcdcf11fcdcf......
-        .......fb111111bf.......
-        ......fffcdb1bdffff.....
-        ....fc111cbfbfc111cf....
-        ....f1b1b1ffff1b1b1f....
-        ....fbfbffffffbfbfbf....
-        .........ffffff.........
-        ...........fff..........
-        ........................
-        ........................
-        ........................
-        ........................
-        `, SpriteKind.Boss)
-    Exp = 0
-    ReqExp = 10
-    QNPC1 = sprites.create(assets.image`NPC1`, SpriteKind.QuestNPC)
-    QNPC2 = sprites.create(assets.image`NPC3`, SpriteKind.QuestNPC)
-    QNPC3 = sprites.create(assets.image`NPC2`, SpriteKind.QuestNPC)
-    PlayerLevel = 1
-    EnemyDmg = [1, 2]
-    PlayerSprite = sprites.create(assets.image`myImage`, SpriteKind.Player)
-    controller.moveSprite(PlayerSprite)
-    scene.cameraFollowSprite(PlayerSprite)
-    tiles.setCurrentTilemap(tilemap`Overworld`)
-    PlayerMagic = statusbars.create(20, 4, StatusBarKind.Magic)
-    PlayerHP = statusbars.create(40, 8, StatusBarKind.Health)
-    PlayerMagic.positionDirection(CollisionDirection.Top)
-    PlayerMagic.setOffsetPadding(70, 8)
-    PlayerHP.positionDirection(CollisionDirection.Top)
-    PlayerHP.setOffsetPadding(60, 0)
-    PlayerHP.setColor(12, 0)
-}
-function Boss_Fight (DMGImn: number, Attack: any[]) {
-    BossProjectile = sprites.create(img`
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    PlayerSprite,
+    [img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . f f f f f 2 2 f f f f f . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e 2 f 2 f f 2 f 2 e f . . 
+        . . f f f 2 2 e e 2 2 f f f . . 
+        . f f e f 2 f e e f 2 f e f f . 
+        . f e e f f e e e e f e e e f . 
+        . . f e e e e e e e e e e f . . 
+        . . . f e e e e e e e e f . . . 
+        . . e 4 f f f f f f f f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `,img`
         . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . . f f f f 2 2 f f f f . . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e 2 f 2 f f f 2 f e f . . 
+        . . f f f 2 f e e 2 2 f f f . . 
+        . . f e 2 f f e e 2 f e e f . . 
+        . f f e f f e e e f e e e f f . 
+        . f f e e e e e e e e e e f f . 
+        . . . f e e e e e e e e f . . . 
+        . . . e f f f f f f f f 4 e . . 
+        . . . 4 f 2 2 2 2 2 e d d 4 . . 
+        . . . e f f f f f f e e 4 . . . 
+        . . . . f f f . . . . . . . . . 
+        `,img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . f f f f f 2 2 f f f f f . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e 2 f 2 f f 2 f 2 e f . . 
+        . . f f f 2 2 e e 2 2 f f f . . 
+        . f f e f 2 f e e f 2 f e f f . 
+        . f e e f f e e e e f e e e f . 
+        . . f e e e e e e e e e e f . . 
+        . . . f e e e e e e e e f . . . 
+        . . e 4 f f f f f f f f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `,img`
         . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . 3 3 3 . . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . . 3 3 3 . . . . . . . 
-        . . . . . . . 3 . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Projectile)
-}
-sprites.onOverlap(SpriteKind.Player, SpriteKind.QuestNPC, function (sprite, otherSprite) {
-    if (controller.A.isPressed() == true) {
-        Quests(otherSprite)
-    }
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . . f f f f 2 2 f f f f . . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e f 2 f f f 2 f 2 e f . . 
+        . . f f f 2 2 e e f 2 f f f . . 
+        . . f e e f 2 e e f f 2 e f . . 
+        . f f e e e f e e e f f e f f . 
+        . f f e e e e e e e e e e f f . 
+        . . . f e e e e e e e e f . . . 
+        . . e 4 f f f f f f f f e . . . 
+        . . 4 d d e 2 2 2 2 2 f 4 . . . 
+        . . . 4 e e f f f f f f e . . . 
+        . . . . . . . . . f f f . . . . 
+        `],
+    500,
+    false
+    )
 })
-sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
-    DefeatedEnemies += 1
+controller.down.onEvent(ControllerButtonEvent.Released, function () {
+    PlayerSprite.setImage(assets.image`myImage`)
 })
-function Quests (NPC: Sprite) {
-    ReqEnem = 5 * PlayerLevel / (PlayerLevel / 2)
-    HuntQuest = "Defeat " + ReqEnem + " enemies"
-    if (PlayerSprite.overlapsWith(QNPC1)) {
-        game.showLongText(HuntQuest, DialogLayout.Bottom)
-        game.setDialogCursor(assets.image`NPC1`)
-        DefeatedEnemies = 0
-        textSprite = textsprite.create("" + DefeatedEnemies + "/" + ReqEnem)
-        tiles.placeOnTile(textSprite, tiles.getTileLocation(0, 0))
-        textSprite.setFlag(SpriteFlag.RelativeToCamera, true)
-        textSprite.setOutline(1, 15)
-    }
-}
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (true) {
-    	
-    } else {
+    if (OpenedMenu != true) {
         animation.runImageAnimation(
         PlayerSprite,
         assets.animation`Attack`,
@@ -164,74 +217,281 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         sprites.destroy(AttackHitBox)
     }
 })
-// Source Code provided By teacher
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
+    PlayerMenu()
+    PlayerMenu2.onButtonPressed(controller.A, function (selection, selectedIndex) {
+        if (selection == "Stats") {
+            game.showLongText("Level: " + PlayerLevel, DialogLayout.Left)
+            game.showLongText("EXP: " + Exp + "/" + ReqExp, DialogLayout.Bottom)
+        }
+    })
+    PlayerMenu2.onButtonPressed(controller.B, function (selection, selectedIndex) {
+        if (OpenedMenu == true) {
+            OpenedMenu = false
+            PlayerMenu2.close()
+        }
+        controller.moveSprite(PlayerSprite)
+    })
+})
+controller.up.onEvent(ControllerButtonEvent.Released, function () {
+    PlayerSprite.setImage(img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . f f f f f 2 2 f f f f f . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e 2 f 2 f f 2 f 2 e f . . 
+        . . f f f 2 2 e e 2 2 f f f . . 
+        . f f e f 2 f e e f 2 f e f f . 
+        . f e e f f e e e e f e e e f . 
+        . . f e e e e e e e e e e f . . 
+        . . . f e e e e e e e e f . . . 
+        . . e 4 f f f f f f f f 4 e . . 
+        . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+        . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `)
+})
+sprites.onOverlap(SpriteKind.HitBox, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    Level_Up()
+})
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    Exp += 1
+})
+controller.left.onEvent(ControllerButtonEvent.Released, function () {
+    PlayerSprite.setImage(img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `)
+})
+controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    PlayerSprite.setImage(img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `)
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    PlayerSprite,
+    [img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d e e e e e f . . . 
+        . . . f e 4 e d d 4 f . . . . . 
+        . . . f 2 2 e d d e f . . . . . 
+        . . f f 5 5 f e e f f f . . . . 
+        . . f f f f f f f f f f . . . . 
+        . . . f f f . . . f f . . . . . 
+        `,img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e e f f . . . . 
+        . . . f 2 2 2 e d d 4 . . . . . 
+        . . . f 2 2 2 e d d e . . . . . 
+        . . . f 5 5 4 f e e f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . . . . f f f . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e 4 4 4 e d d 4 . . . . 
+        . . . f 2 2 2 2 e d d e . . . . 
+        . . f f 5 5 4 4 f e e f . . . . 
+        . . f f f f f f f f f f . . . . 
+        . . . f f f . . . f f . . . . . 
+        `],
+    500,
+    false
+    )
+})
+function Level_Up () {
+    if (ReqExp <= Exp) {
+        Exp = 0
+        ReqExp = ReqExp * 2
+        PlayerLevel += 1
+        PlayerHP.value = 103
+    }
+}
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    PlayerSprite,
+    [img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e e e d d d f . . . 
+        . . . . . f 4 d d e 4 e f . . . 
+        . . . . . f e d d e 2 2 f . . . 
+        . . . . f f f e e f 5 5 f f . . 
+        . . . . f f f f f f f f f f . . 
+        . . . . . f f . . . f f f . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . 4 d d e 4 4 4 e f . . . 
+        . . . . e d d e 2 2 2 2 f . . . 
+        . . . . f e e f 4 4 5 5 f f . . 
+        . . . . f f f f f f f f f f . . 
+        . . . . . f f . . . f f f . . . 
+        `,img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f f e e 4 4 4 e f . . . 
+        . . . . . 4 d d e 2 2 2 f . . . 
+        . . . . . e d d e 2 2 2 f . . . 
+        . . . . . f e e f 4 5 5 f . . . 
+        . . . . . . f f f f f f . . . . 
+        . . . . . . . f f f . . . . . . 
+        `],
+    500,
+    false
+    )
+})
+// Source Code provided by teacher
 function Monster_Spawns (PlayerLevel: number) {
-    SpawnLocation = tiles.getTilesByType(sprites.castle.tileGrass1)
-    EnemySprites = [sprites.create(img`
-        ........................
-        ........................
-        ........................
-        ........................
-        ..........ffff..........
-        ........ff1111ff........
-        .......fb111111bf.......
-        .......f11111111f.......
-        ......fd11111111df......
-        ......fd11111111df......
-        ......fddd1111dddf......
-        ......fbdbfddfbdbf......
-        ......fcdcf11fcdcf......
-        .......fb111111bf.......
-        ......fffcdb1bdffff.....
-        ....fc111cbfbfc111cf....
-        ....f1b1b1ffff1b1b1f....
-        ....fbfbffffffbfbfbf....
-        .........ffffff.........
-        ...........fff..........
-        ........................
-        ........................
-        ........................
-        ........................
-        `, SpriteKind.Enemy), sprites.create(img`
-        . . f f f . . . . . . . . . . . 
-        f f f c c . . . . . . . . f f f 
-        f f c c . . c c . . . f c b b c 
-        f f c 3 c c 3 c c f f b b b c . 
-        f f b 3 b c 3 b c f b b c c c . 
-        . c b b b b b b c f b c b c c . 
-        . c b b b b b b c b b c b b c . 
-        c b 1 b b b 1 b b b c c c b c . 
-        c b b b b b b b b c c c c c . . 
-        f b c b b b c b b b b f c . . . 
-        f b 1 f f f 1 b b b b f c c . . 
-        . f b b b b b b b b c f . . . . 
-        . . f b b b b b b c f . . . . . 
-        . . . f f f f f f f . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Enemy), sprites.create(img`
-        . . . . c c c c c c . . . . . . 
-        . . . c 6 7 7 7 7 6 c . . . . . 
-        . . c 7 7 7 7 7 7 7 7 c . . . . 
-        . c 6 7 7 7 7 7 7 7 7 6 c . . . 
-        . c 7 c 6 6 6 6 c 7 7 7 c . . . 
-        . f 7 6 f 6 6 f 6 7 7 7 f . . . 
-        . f 7 7 7 7 7 7 7 7 7 7 f . . . 
-        . . f 7 7 7 7 6 c 7 7 6 f c . . 
-        . . . f c c c c 7 7 6 f 7 7 c . 
-        . . c 7 2 7 7 7 6 c f 7 7 7 7 c 
-        . c 7 7 2 7 7 c f c 6 7 7 6 c c 
-        c 1 1 1 1 7 6 f c c 6 6 6 c . . 
-        f 1 1 1 1 1 6 6 c 6 6 6 6 f . . 
-        f 6 1 1 1 1 1 6 6 6 6 6 c f . . 
-        . f 6 1 1 1 1 1 1 6 6 6 f . . . 
-        . . c c c c c c c c c f . . . . 
-        `, SpriteKind.Enemy)]
+    SpawnLocation = tiles.getTilesByType(assets.tile`GrassFloor`)
     if (PlayerLevel / 30 >= 1) {
         for (let index = 0; index < PlayerLevel * 2; index++) {
             Enemies = EnemySprites._pickRandom()
             tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
         }
+    } else if (PlayerLevel <= 3) {
+        for (let index = 0; index < 3; index++) {
+            Enemies = EnemySprites._pickRandom()
+            tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
+        }
+    } else {
+    	
     }
     for (let index = 0; index < PlayerLevel; index++) {
         Enemies = EnemySprites._pickRandom()
@@ -239,34 +499,94 @@ function Monster_Spawns (PlayerLevel: number) {
     }
 }
 let Enemies: Sprite = null
-let EnemySprites: Sprite[] = []
 let SpawnLocation: tiles.Location[] = []
 let AttackHitBox: Sprite = null
-let textSprite: TextSprite = null
-let HuntQuest = ""
-let ReqEnem = 0
-let DefeatedEnemies = 0
-let BossProjectile: Sprite = null
-let PlayerHP: StatusBarSprite = null
-let PlayerMagic: StatusBarSprite = null
-let EnemyDmg: number[] = []
-let QNPC3: Sprite = null
-let QNPC2: Sprite = null
-let QNPC1: Sprite = null
-let ReqExp = 0
-let Exp = 0
-let Boss: Sprite = null
-let PlayerLevel = 0
-let PlayerSprite: Sprite = null
 let OpenedMenu = false
 let PlayerMenu2: miniMenu.MenuSprite = null
 let MenuItems: miniMenu.MenuItem[] = []
-Start()
+let PlayerHP: StatusBarSprite = null
+let PlayerSprite: Sprite = null
+let PlayerLevel = 0
+let ReqExp = 0
+let Exp = 0
+let EnemySprites: Sprite[] = []
+EnemySprites = [sprites.create(img`
+    ........................
+    ........................
+    ........................
+    ........................
+    ..........ffff..........
+    ........ff1111ff........
+    .......fb111111bf.......
+    .......f11111111f.......
+    ......fd11111111df......
+    ......fd11111111df......
+    ......fddd1111dddf......
+    ......fbdbfddfbdbf......
+    ......fcdcf11fcdcf......
+    .......fb111111bf.......
+    ......fffcdb1bdffff.....
+    ....fc111cbfbfc111cf....
+    ....f1b1b1ffff1b1b1f....
+    ....fbfbffffffbfbfbf....
+    .........ffffff.........
+    ...........fff..........
+    ........................
+    ........................
+    ........................
+    ........................
+    `, SpriteKind.Enemy), sprites.create(img`
+    . . f f f . . . . . . . . . . . 
+    f f f c c . . . . . . . . f f f 
+    f f c c . . c c . . . f c b b c 
+    f f c 3 c c 3 c c f f b b b c . 
+    f f b 3 b c 3 b c f b b c c c . 
+    . c b b b b b b c f b c b c c . 
+    . c b b b b b b c b b c b b c . 
+    c b 1 b b b 1 b b b c c c b c . 
+    c b b b b b b b b c c c c c . . 
+    f b c b b b c b b b b f c . . . 
+    f b 1 f f f 1 b b b b f c c . . 
+    . f b b b b b b b b c f . . . . 
+    . . f b b b b b b c f . . . . . 
+    . . . f f f f f f f . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Enemy), sprites.create(img`
+    . . . . c c c c c c . . . . . . 
+    . . . c 6 7 7 7 7 6 c . . . . . 
+    . . c 7 7 7 7 7 7 7 7 c . . . . 
+    . c 6 7 7 7 7 7 7 7 7 6 c . . . 
+    . c 7 c 6 6 6 6 c 7 7 7 c . . . 
+    . f 7 6 f 6 6 f 6 7 7 7 f . . . 
+    . f 7 7 7 7 7 7 7 7 7 7 f . . . 
+    . . f 7 7 7 7 6 c 7 7 6 f c . . 
+    . . . f c c c c 7 7 6 f 7 7 c . 
+    . . c 7 2 7 7 7 6 c f 7 7 7 7 c 
+    . c 7 7 2 7 7 c f c 6 7 7 6 c c 
+    c 1 1 1 1 7 6 f c c 6 6 6 c . . 
+    f 1 1 1 1 1 6 6 c 6 6 6 6 f . . 
+    f 6 1 1 1 1 1 6 6 6 6 6 c f . . 
+    . f 6 1 1 1 1 1 1 6 6 6 f . . . 
+    . . c c c c c c c c c f . . . . 
+    `, SpriteKind.Enemy)]
+Exp = 0
+ReqExp = 10
+PlayerLevel = 1
+PlayerSprite = sprites.create(assets.image`myImage`, SpriteKind.Player)
+controller.moveSprite(PlayerSprite)
+scene.cameraFollowSprite(PlayerSprite)
+tiles.setCurrentTilemap(tilemap`Overworld`)
+let PlayerMagic = statusbars.create(20, 4, StatusBarKind.Magic)
+PlayerHP = statusbars.create(40, 8, StatusBarKind.Health)
+PlayerMagic.positionDirection(CollisionDirection.Top)
+PlayerMagic.setOffsetPadding(70, 8)
+PlayerHP.positionDirection(CollisionDirection.Top)
+PlayerHP.setOffsetPadding(60, 0)
+PlayerHP.setColor(6, 3)
+PlayerHP.value = 103
 game.onUpdateInterval(500, function () {
-    if (ReqExp == Exp) {
-        Exp = 0
-        ReqExp = ReqExp * 2
-    }
+	
 })
 game.onUpdateInterval(5000, function () {
     Monster_Spawns(PlayerLevel)
