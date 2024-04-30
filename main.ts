@@ -253,13 +253,6 @@ controller.up.onEvent(ControllerButtonEvent.Released, function () {
         . . . . . f f . . f f . . . . . 
         `)
 })
-sprites.onOverlap(SpriteKind.HitBox, SpriteKind.Enemy, function (sprite, otherSprite) {
-    sprites.destroy(otherSprite)
-    Level_Up()
-})
-sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
-    Exp += 1
-})
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
     PlayerSprite.setImage(img`
         . . . . f f f f f f . . . . . . 
@@ -376,14 +369,10 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     false
     )
 })
-function Level_Up () {
-    if (ReqExp <= Exp) {
-        Exp = 0
-        ReqExp = ReqExp * 2
-        PlayerLevel += 1
-        PlayerHP.value = 103
-    }
-}
+sprites.onOverlap(SpriteKind.HitBox, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    PlayerLevel += 1
+})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     animation.runImageAnimation(
     PlayerSprite,
@@ -477,25 +466,25 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     false
     )
 })
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (OpenedMenu == false) {
+        PlayerLevel += 1
+    }
+})
 // Source Code provided by teacher
 function Monster_Spawns (PlayerLevel: number) {
+    PlayerLevel = PlayerLevel
     SpawnLocation = tiles.getTilesByType(assets.tile`GrassFloor`)
-    if (PlayerLevel / 30 >= 1) {
-        for (let index = 0; index < PlayerLevel * 2; index++) {
-            Enemies = EnemySprites._pickRandom()
-            tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
-        }
-    } else if (PlayerLevel <= 3) {
+    if (PlayerLevel <= 2) {
         for (let index = 0; index < 3; index++) {
             Enemies = EnemySprites._pickRandom()
             tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
         }
     } else {
-    	
-    }
-    for (let index = 0; index < PlayerLevel; index++) {
-        Enemies = EnemySprites._pickRandom()
-        tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
+        for (let index = 0; index < PlayerLevel * 2; index++) {
+            Enemies = EnemySprites._pickRandom()
+            tiles.placeOnTile(Enemies, SpawnLocation.removeAt(randint(0, SpawnLocation.length - 1)))
+        }
     }
 }
 let Enemies: Sprite = null
@@ -510,7 +499,8 @@ let PlayerLevel = 0
 let ReqExp = 0
 let Exp = 0
 let EnemySprites: Sprite[] = []
-EnemySprites = [sprites.create(img`
+EnemySprites = [
+sprites.create(img`
     ........................
     ........................
     ........................
@@ -535,7 +525,8 @@ EnemySprites = [sprites.create(img`
     ........................
     ........................
     ........................
-    `, SpriteKind.Enemy), sprites.create(img`
+    `, SpriteKind.Enemy),
+sprites.create(img`
     . . f f f . . . . . . . . . . . 
     f f f c c . . . . . . . . f f f 
     f f c c . . c c . . . f c b b c 
@@ -552,7 +543,8 @@ EnemySprites = [sprites.create(img`
     . . . f f f f f f f . . . . . . 
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
-    `, SpriteKind.Enemy), sprites.create(img`
+    `, SpriteKind.Enemy),
+sprites.create(img`
     . . . . c c c c c c . . . . . . 
     . . . c 6 7 7 7 7 6 c . . . . . 
     . . c 7 7 7 7 7 7 7 7 c . . . . 
@@ -569,7 +561,71 @@ EnemySprites = [sprites.create(img`
     f 6 1 1 1 1 1 6 6 6 6 6 c f . . 
     . f 6 1 1 1 1 1 1 6 6 6 f . . . 
     . . c c c c c c c c c f . . . . 
-    `, SpriteKind.Enemy)]
+    `, SpriteKind.Enemy),
+sprites.create(img`
+    . . . . c c c c c c . . . . . . 
+    . . . c 6 7 7 7 7 6 c . . . . . 
+    . . c 7 7 7 7 7 7 7 7 c . . . . 
+    . c 6 7 7 7 7 7 7 7 7 6 c . . . 
+    . c 7 c 6 6 6 6 c 7 7 7 c . . . 
+    . f 7 6 f 6 6 f 6 7 7 7 f . . . 
+    . f 7 7 7 7 7 7 7 7 7 7 f . . . 
+    . . f 7 7 7 7 6 c 7 7 6 f c . . 
+    . . . f c c c c 7 7 6 f 7 7 c . 
+    . . c 7 2 7 7 7 6 c f 7 7 7 7 c 
+    . c 7 7 2 7 7 c f c 6 7 7 6 c c 
+    c 1 1 1 1 7 6 f c c 6 6 6 c . . 
+    f 1 1 1 1 1 6 6 c 6 6 6 6 f . . 
+    f 6 1 1 1 1 1 6 6 6 6 6 c f . . 
+    . f 6 1 1 1 1 1 1 6 6 6 f . . . 
+    . . c c c c c c c c c f . . . . 
+    `, SpriteKind.Enemy),
+sprites.create(img`
+    . . f f f . . . . . . . . . . . 
+    f f f c c . . . . . . . . f f f 
+    f f c c . . c c . . . f c b b c 
+    f f c 3 c c 3 c c f f b b b c . 
+    f f b 3 b c 3 b c f b b c c c . 
+    . c b b b b b b c f b c b c c . 
+    . c b b b b b b c b b c b b c . 
+    c b 1 b b b 1 b b b c c c b c . 
+    c b b b b b b b b c c c c c . . 
+    f b c b b b c b b b b f c . . . 
+    f b 1 f f f 1 b b b b f c c . . 
+    . f b b b b b b b b c f . . . . 
+    . . f b b b b b b c f . . . . . 
+    . . . f f f f f f f . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Enemy),
+sprites.create(img`
+    ........................
+    ........................
+    ........................
+    ........................
+    ..........ffff..........
+    ........ff1111ff........
+    .......fb111111bf.......
+    .......f11111111f.......
+    ......fd11111111df......
+    ......fd11111111df......
+    ......fddd1111dddf......
+    ......fbdbfddfbdbf......
+    ......fcdcf11fcdcf......
+    .......fb111111bf.......
+    ......fffcdb1bdffff.....
+    ....fc111cbfbfc111cf....
+    ....f1b1b1ffff1b1b1f....
+    ....fbfbffffffbfbfbf....
+    .........ffffff.........
+    ...........fff..........
+    ........................
+    ........................
+    ........................
+    ........................
+    `, SpriteKind.Enemy)
+]
+let X = 10
 Exp = 0
 ReqExp = 10
 PlayerLevel = 1
@@ -586,8 +642,10 @@ PlayerHP.setOffsetPadding(60, 0)
 PlayerHP.setColor(6, 3)
 PlayerHP.value = 103
 game.onUpdateInterval(500, function () {
-	
+    if (PlayerLevel >= 3) {
+        game.gameOver(true)
+    }
 })
-game.onUpdateInterval(5000, function () {
+game.onUpdateInterval(1000, function () {
     Monster_Spawns(PlayerLevel)
 })
